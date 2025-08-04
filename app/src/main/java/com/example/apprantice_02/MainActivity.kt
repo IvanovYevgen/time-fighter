@@ -5,7 +5,11 @@ import android.widget.Button
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import android.os.CountDownTimer
+import android.view.Menu
+import android.view.animation.AnimationUtils
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
+import android.view.MenuItem
 
 class MainActivity : AppCompatActivity() {
     private var score = 0
@@ -28,7 +32,15 @@ class MainActivity : AppCompatActivity() {
         timeLeftTextView = findViewById(R.id.time_text_view)
         tapMeButton = findViewById(R.id.tap_me_button)
         emojiView = findViewById(R.id.emoji_view)
-        tapMeButton.setOnClickListener { incrementScore() }
+        tapMeButton.setOnClickListener { view ->
+            val bounceAnimation = AnimationUtils.loadAnimation(
+                this,
+                R.anim.bounce
+            )
+            view.startAnimation(bounceAnimation)
+
+            incrementScore()
+        }
 
         resetGame()
     }
@@ -111,5 +123,37 @@ class MainActivity : AppCompatActivity() {
         Toast.makeText(this, getString(R.string.game_over_message, score), Toast.LENGTH_LONG).show()
 
         showEmoji()
+    }
+
+
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+
+        super.onCreateOptionsMenu(menu)
+        menuInflater.inflate(R.menu.menu, menu)
+        return true
+    }
+
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.about_item -> {
+                showInfo()
+                true
+            }
+
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
+
+    private fun showInfo() {
+        val dialogTitle = getString(
+            R.string.about_title,
+            BuildConfig.VERSION_NAME
+        )
+        val dialogMessage = getString(R.string.about_message)
+        val builder = AlertDialog.Builder(this)
+        builder.setTitle(dialogTitle)
+        builder.setMessage(dialogMessage)
+        builder.create().show()
     }
 }
